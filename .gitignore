@@ -3,4 +3,5 @@
 
 # But track these specific config files
 !init.el
+!simpc-mode.el
 !.gitignore
