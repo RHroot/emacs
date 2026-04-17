@@ -74,10 +74,13 @@
 ;; ==============================================================================
 
 ;; --- Navigation ---
-(global-set-key (kbd "C-c C-n") 'next-buffer)
-(global-set-key (kbd "C-c C-p") 'previous-buffer)
-(global-set-key (kbd "C-c C-o") 'ffap)
-(global-set-key (kbd "C-c k") 'my/kill-all-buffers)
+(global-set-key (kbd "C-c C-n") 'next-buffer) ;; Open the Next Buffer
+(global-set-key (kbd "C-c C-p") 'previous-buffer) ;; open the Previous Buffer
+(global-set-key (kbd "C-c C-o") 'ffap) ;; Open the file path under the cursor
+(global-set-key (kbd "C-c k") 'my/kill-all-buffers) ;; Kill all the buffers except the one you are on
+(global-set-key (kbd "C-c C-r") 'recentf-open-files) ;; Open Recent Files
+(global-set-key (kbd "M-;") 'comment-line) ;; To comment files default mapped to 'comment-dwim'
+(global-set-key (kbd "C-c e") 'eval-buffer) ;; To eval the current buffer
 
 (defun my/kill-all-buffers ()
   "Kill all buffers except the current one."
@@ -85,19 +88,24 @@
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
 ;; --- Editing Utilities ---
-(global-set-key (kbd "C-,") 'rc/duplicate-line)
+(global-set-key (kbd "C-,") 'duplicate-line)
 
-(defun rc/duplicate-line ()
+(defun duplicate-line ()
   "Duplicate current line"
   (interactive)
-  (let ((column (- (point) (point-at-bol)))
-        (line (let ((s (thing-at-point 'line t)))
-                (if s (string-remove-suffix "\n" s) ""))))
+  (let ((column (- (point) (line-beginning-position)))
+        (line (string-trim-right (thing-at-point 'line t))))
     (move-end-of-line 1)
     (newline)
     (insert line)
     (move-beginning-of-line 1)
     (forward-char column)))
+
+;; --- For Nix indenting ---
+(defun my/nix-indent-buffer ()
+  "Indent the current Nix buffer."
+  (interactive)
+  (indent-region (point-min) (point-max)))
 
 ;; --- Project Management ---
 (global-set-key (kbd "C-c p f") 'project-find-file)
@@ -123,6 +131,11 @@
                         (format "gcc -Wall -o %s %s && ./%s" name file name)))
                      (t "make -k")))))))
 (add-hook 'prog-mode-hook #'my-set-compile-command)
+
+;; --- Built-in Quality of Life ---
+(save-place-mode 1)       ;; Remember cursor position in files
+(recentf-mode 1)          ;; Track recently opened files
+(setq recentf-max-menu-items 20)
 
 ;; ==============================================================================
 ;; 5. LANGUAGE MODES & LSP (EGLOT)
@@ -154,10 +167,6 @@
 (use-package nix-mode
   :mode "\\.nix\\'"
   :config
-  (defun my/nix-indent-buffer ()
-    "Indent the current Nix buffer."
-    (interactive)
-    (indent-region (point-min) (point-max)))
   (define-key nix-mode-map (kbd "C-c f") #'my/nix-indent-buffer))
 
 ;; --- Web/Config (JSON, CSS, JS, TS, MD, YAML) ---
