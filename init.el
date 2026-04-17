@@ -55,17 +55,6 @@
       inhibit-startup-screen t
       gc-cons-threshold (* 50 1000 1000))
 
-;; --- Whitespace Visualization ---
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-(setq whitespace-style '(face tabs trailing empty newline indentation))
-(global-whitespace-mode 1)
-(custom-set-faces
- '(whitespace-space ((t (:foreground "#444444"))))
- '(whitespace-tab ((t (:foreground "#444444"))))
- '(whitespace-newline ((t (:foreground "#444444"))))
- '(whitespace-trailing ((t (:background "#330000" :foreground "#ff0000"))))
- '(whitespace-empty ((t (:background "#222222")))))
-
 ;; ==============================================================================
 ;; 3. COMPLETION SYSTEM (IDO + ICOMPLETE)
 ;; ==============================================================================
