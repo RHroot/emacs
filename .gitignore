@@ -1,7 +1,8 @@
-# Ignore everything by default
+ # Ignore everything by default
 *
 
 # But track these specific config files
 !init.el
 !lisp/
+!lisp/**
 !.gitignore
