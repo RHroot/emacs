@@ -32,11 +32,11 @@
 (global-font-lock-mode 1)
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
+(add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
+(load-theme 'rose-pine t)
 
 ;; --- Frame & Font ---
-(set-frame-parameter (selected-frame) 'alpha '(80 . 60))
-(add-to-list 'default-frame-alist '(alpha . (80 . 60)))
-(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-16"))
+(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-18"))
 
 ;; --- Basic Behavior ---
 (setq dired-kill-when-opening-new-dired-buffer t)
@@ -141,12 +141,6 @@
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (require 'simpc-mode)
 
-;; --- Load Custom Theme from File ---
-(let ((theme-file "~/.emacs.d/lisp/gruber-darker-theme.el"))
-  (when (file-exists-p theme-file)
-    (load-file theme-file)
-    (load-theme 'gruber-darker t)))
-
 (dolist (ext '("\\.c\\'" "\\.h\\'" "\\.cpp\\'" "\\.hpp\\'" "\\.cc\\'" "\\.hh\\'"))
   (add-to-list 'auto-mode-alist (cons ext 'simpc-mode)))
 
@@ -173,8 +167,8 @@
 
 ;; --- Web/Config (JSON, CSS, JS, TS, MD, YAML) ---
 ;; 1. Completion (Eglot)
-(dolist (mode '(json-mode css-mode js-mode))
-  (add-hook mode #'eglot-ensure))
+(dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook))
+  (add-hook hook #'eglot-ensure))
 
 ;; 2. Formatting (Prettierd)
 (defun my/prettierd-format-buffer ()
@@ -187,8 +181,8 @@
           (error (message "Prettierd failed or not found")))
       (message "Buffer has no file name"))))
 
-(dolist (mode '(json-mode css-mode js-mode typescript-mode markdown-mode yaml-mode))
-  (add-hook mode
+(dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook markdown-mode-hook yaml-mode-hook))
+  (add-hook hook
             (lambda ()
               (local-set-key (kbd "C-c f") #'my/prettierd-format-buffer))))
 

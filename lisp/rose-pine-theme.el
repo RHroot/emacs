@@ -1,19 +1,20 @@
-(deftheme gruber-darker
-  "Gruber Darker theme with refined typography and comprehensive coverage.")
+(deftheme rose-pine
+  "Rose Pine theme with pitch black background and refined typography.")
 
-(let* ((bg-main    "#181818") (bg-surf    "#282828") (bg-overlay "#453d41")
-       (bg-border  "#52494e") (fg-main    "#e4e4ef") (fg-dim     "#565f73")
-       (c1         "#f43841") (c2         "#96a6c8") (c3         "#ffdd33")
-       (c4         "#73c936") (c5         "#9e95c7") (c6         "#95a99f")
-       (c7         "#cc8c3c") (c8         "#ff4f58")
+(let* ((bg-main    "#1c1e24") (bg-surf    "#242730") (bg-overlay "#2d303c")
+       (bg-border  "#3e4150") (fg-main    "#c9cbd5") (fg-dim     "#6b7084")
+       (c1         "#d07090") (c2         "#4f8ea6") (c3         "#d4a853")
+       (c4         "#78b5a0") (c5         "#c498b0") (c6         "#9a8bb0")
+       (c7         "#c48a70") (c8         "#6ba8b5")
        (col-error   c1) (col-warning c3) (col-success c4)
-       (col-keyword c3) (col-func    c2) (col-type    c6)
-       (col-const   c5) (col-string  c4) (col-comment c7) (col-link c2))
+       (col-keyword c1) (col-func    c2) (col-type    c4)
+       (col-const   c5) (col-string  c7) (col-comment fg-dim) (col-link c2))
 
-  (custom-theme-set-variables 'gruber-darker
-    '(frame-background-mode (quote dark)))
+  (custom-theme-set-variables
+   'rose-pine
+   '(frame-background-mode (quote dark)))
 
-  (custom-theme-set-faces 'gruber-darker
+  (custom-theme-set-faces 'rose-pine
    ;; ==========================================
    ;; CORE & BASICS
    ;; ==========================================
@@ -21,7 +22,7 @@
    `(bold ((t (:weight bold :foreground ,fg-main))))
    `(italic ((t (:slant italic))))
    `(bold-italic ((t (:weight bold :slant italic))))
-   `(cursor ((t (:background ,c3))))
+   `(cursor ((t (:background ,c1))))
    `(fringe ((t (:foreground ,fg-dim :background ,bg-main))))
    `(border ((t (:background ,bg-border))))
    `(vertical-border ((t (:foreground ,bg-border))))
@@ -29,7 +30,7 @@
    `(scroll-bar ((t (:background ,bg-main :foreground ,bg-border))))
    `(tool-bar ((t (:background ,bg-main :foreground ,fg-main))))
    `(menu ((t (:background ,bg-main :foreground ,fg-main))))
-   `(minibuffer-prompt ((t (:foreground ,c2 :weight semi-bold))))
+   `(minibuffer-prompt ((t (:foreground ,c4 :weight semi-bold))))
    `(link ((t (:foreground ,col-link :underline t :weight semi-bold))))
    `(link-visited ((t (:foreground ,c5 :underline t :slant italic))))
    `(shadow ((t (:foreground ,fg-dim :weight light))))
@@ -43,7 +44,7 @@
    `(success ((t (:foreground ,col-success :weight semi-bold))))
    `(warning ((t (:foreground ,col-warning :weight bold))))
    `(error ((t (:foreground ,col-error :weight bold))))
-   `(button ((t (:foreground ,c2 :underline t :weight bold))))
+   `(button ((t (:foreground ,c4 :underline t :weight bold))))
 
    ;; ==========================================
    ;; SYNTAX (Font Lock)
@@ -52,9 +53,9 @@
    `(font-lock-comment-face ((t (:foreground ,col-comment :slant italic :weight light))))
    `(font-lock-comment-delimiter-face ((t (:foreground ,col-comment :slant italic :weight light))))
    `(font-lock-constant-face ((t (:foreground ,col-const :slant italic))))
-   `(font-lock-doc-face ((t (:foreground ,c4 :slant italic))))
+   `(font-lock-doc-face ((t (:foreground ,c5 :slant italic))))
    `(font-lock-function-name-face ((t (:foreground ,col-func :weight bold :slant italic))))
-   `(font-lock-function-call-face ((t (:foreground ,c2 :weight bold))))
+   `(font-lock-function-call-face ((t (:foreground ,c4 :weight bold))))
    `(font-lock-keyword-face ((t (:foreground ,col-keyword :weight bold))))
    `(font-lock-string-face ((t (:foreground ,col-string))))
    `(font-lock-type-face ((t (:foreground ,col-type :weight semi-bold))))
@@ -74,7 +75,7 @@
    ;; ==========================================
    ;; PARENTHESES & DELIMITERS
    ;; ==========================================
-   `(show-paren-match ((t (:background ,bg-overlay :foreground ,c2 :weight bold))))
+   `(show-paren-match ((t (:background ,bg-overlay :foreground ,c4 :weight bold))))
    `(show-paren-mismatch ((t (:background ,col-error :foreground ,bg-main :weight bold))))
    `(hl-paren-face-0 ((t (:foreground ,c1 :weight bold))))
    `(hl-paren-face-1 ((t (:foreground ,c2 :weight bold))))
@@ -120,7 +121,7 @@
    `(whitespace-line ((t (:background ,bg-surf :foreground ,fg-dim))))
    `(highlight-indent-guides-character-face ((t (:foreground ,bg-overlay :weight light))))
    `(hl-todo-face ((t (:foreground ,col-error :weight bold :background ,bg-overlay))))
-   `(isearch ((t (:foreground ,bg-main :background ,c3 :weight extra-bold))))
+   `(isearch ((t (:foreground ,bg-main :background ,col-warning :weight extra-bold))))
    `(isearch-fail ((t (:foreground ,bg-main :background ,col-error :weight bold))))
    `(lazy-highlight ((t (:foreground ,fg-main :background ,bg-overlay :weight normal))))
 
@@ -140,7 +141,7 @@
    `(company-scrollbar-bg ((t (:background ,bg-surf))))
    `(corfu-default ((t (:foreground ,fg-main :background ,bg-surf :weight normal))))
    `(corfu-current ((t (:foreground ,bg-main :background ,c1 :weight bold))))
-   `(corfu-bar ((t (:background ,c2 :weight bold))))
+   `(corfu-bar ((t (:background ,c4 :weight bold))))
    `(vertico-current ((t (:foreground ,bg-main :background ,c1 :weight bold))))
    `(vertico-group-title ((t (:foreground ,c4 :weight extra-bold))))
    `(vertico-group-separator ((t (:foreground ,bg-overlay :weight light))))
@@ -156,7 +157,7 @@
    `(which-key-key-face ((t (:foreground ,c4 :weight bold))))
    `(which-key-command-description-face ((t (:foreground ,fg-main :weight normal))))
    `(which-key-group-description-face ((t (:foreground ,c3 :weight semi-bold))))
-   `(eldoc-highlight-function-argument ((t (:foreground ,c2 :weight bold :slant italic))))
+   `(eldoc-highlight-function-argument ((t (:foreground ,c4 :weight bold :slant italic))))
 
    ;; ==========================================
    ;; FILE & GIT
@@ -195,7 +196,7 @@
    `(git-gutter-modified ((t (:foreground ,c3 :weight bold))))
    `(vc-conflict-state ((t (:background ,col-error :foreground ,bg-main :weight bold))))
    `(vc-edited-state ((t (:foreground ,c3 :weight semi-bold))))
-   `(vc-missing-state ((t (:foreground ,col-error :weight bold))))
+   `(vc-missing-state ((t (:foregrnound ,col-error :weight bold))))
    `(vc-up-to-date-state ((t (:foreground ,fg-dim :weight light))))
 
    ;; ==========================================
@@ -205,7 +206,7 @@
    `(lsp-face-highlight-textual ((t (:background ,bg-surf :weight bold))))
    `(lsp-face-highlight-write ((t (:background ,bg-overlay :weight bold))))
    `(lsp-ui-sideline-code-action ((t (:foreground ,c3 :weight bold))))
-   `(lsp-ui-sideline-current-symbol ((t (:foreground ,c2 :weight bold :slant italic))))
+   `(lsp-ui-sideline-current-symbol ((t (:foreground ,c4 :weight bold :slant italic))))
    `(ts-comment ((t (:foreground ,col-comment :slant italic :weight light))))
    `(ts-constant ((t (:foreground ,col-const :slant italic))))
    `(ts-function ((t (:foreground ,col-func :weight bold :slant italic))))
@@ -363,4 +364,4 @@
   (add-to-list 'custom-theme-load-path
                (file-name-as-directory (file-name-directory load-file-name))))
 
-(provide-theme 'gruber-darker)
+(provide-theme 'rose-pine)
