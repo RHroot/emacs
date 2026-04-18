@@ -33,10 +33,6 @@
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
 
-(use-package gruber-darker-theme
-  :config
-  (load-theme 'gruber-darker t))
-
 ;; --- Frame & Font ---
 (set-frame-parameter (selected-frame) 'alpha '(80 . 60))
 (add-to-list 'default-frame-alist '(alpha . (80 . 60)))
@@ -144,6 +140,7 @@
 ;; --- Simpc Mode (Lightweight C/C++) ---
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (require 'simpc-mode)
+(load-theme 'gruber-darker t)
 
 (dolist (ext '("\\.c\\'" "\\.h\\'" "\\.cpp\\'" "\\.hpp\\'" "\\.cc\\'" "\\.hh\\'"))
   (add-to-list 'auto-mode-alist (cons ext 'simpc-mode)))
