@@ -1,6 +1,4 @@
-(deftheme nord
-  "Nord theme with soft-dark background and refined typography.")
-
+(deftheme nord "Nord theme with soft-dark background and refined typography.")
 (let* ((bg-main    "#1C1F26") (bg-surf    "#23272E") (bg-overlay "#2B3038")
        (bg-border  "#3B4252") (fg-main    "#ECEFF4") (fg-dim     "#6A7383")
        (c1         "#BF616A") (c2         "#81A1C1") (c3         "#EBCB8B")
@@ -9,15 +7,8 @@
        (col-error   c1) (col-warning c3) (col-success c6)
        (col-keyword c2) (col-func    c4) (col-type    c8)
        (col-const   c5) (col-string  c7) (col-comment fg-dim) (col-link c4))
-
-  (custom-theme-set-variables
-   'nord
-   '(frame-brackground-mode (quote dark)))
-  
+  (custom-theme-set-variables 'nord '(frame-brackground-mode (quote dark)))
   (custom-theme-set-faces 'nord
-   ;; ==========================================
-   ;; CORE & BASICS
-   ;; ==========================================
    `(default ((t (:foreground ,fg-main :background ,bg-main))))
    `(bold ((t (:weight bold :foreground ,fg-main))))
    `(italic ((t (:slant italic))))
@@ -45,10 +36,6 @@
    `(warning ((t (:foreground ,col-warning :weight bold))))
    `(error ((t (:foreground ,col-error :weight bold))))
    `(button ((t (:foreground ,c4 :underline t :weight bold))))
-
-   ;; ==========================================
-   ;; SYNTAX (Font Lock)
-   ;; ==========================================
    `(font-lock-builtin-face ((t (:foreground ,col-type :weight semi-bold))))
    `(font-lock-comment-face ((t (:foreground ,col-comment :slant italic :weight light))))
    `(font-lock-comment-delimiter-face ((t (:foreground ,col-comment :slant italic :weight light))))
@@ -71,10 +58,6 @@
    `(font-lock-number-face ((t (:foreground ,c3 :weight normal))))
    `(font-lock-bracket-face ((t (:foreground ,fg-dim :weight normal))))
    `(font-lock-delimiter-face ((t (:foreground ,fg-dim :weight normal))))
-
-   ;; ==========================================
-   ;; PARENTHESES & DELIMITERS
-   ;; ==========================================
    `(show-paren-match ((t (:background ,bg-overlay :foreground ,c4 :weight bold))))
    `(show-paren-mismatch ((t (:background ,col-error :foreground ,bg-main :weight bold))))
    `(hl-paren-face-0 ((t (:foreground ,c1 :weight bold))))
@@ -95,10 +78,6 @@
    `(rainbow-delimiters-depth-8-face ((t (:foreground ,c8 :weight semi-bold))))
    `(rainbow-delimiters-depth-9-face ((t (:foreground ,c1 :weight semi-bold))))
    `(rainbow-delimiters-unmatched-face ((t (:foreground ,col-error :weight bold))))
-
-   ;; ==========================================
-   ;; UI ELEMENTS
-   ;; ==========================================
    `(mode-line ((t (:foreground ,fg-main :background ,bg-surf :box nil :weight bold))))
    `(mode-line-inactive ((t (:foreground ,fg-dim :background ,bg-main :box nil :weight light))))
    `(mode-line-buffer-id ((t (:weight extra-bold :foreground ,c1))))
@@ -124,10 +103,6 @@
    `(isearch ((t (:foreground ,bg-main :background ,col-warning :weight extra-bold))))
    `(isearch-fail ((t (:foreground ,bg-main :background ,col-error :weight bold))))
    `(lazy-highlight ((t (:foreground ,fg-main :background ,bg-overlay :weight normal))))
-
-   ;; ==========================================
-   ;; COMPLETION
-   ;; ==========================================
    `(ido-first-match ((t (:foreground ,c3 :weight bold))))
    `(ido-only-match ((t (:foreground ,c4 :weight extra-bold))))
    `(ido-subdir ((t (:foreground ,c4 :weight bold))))
@@ -158,10 +133,6 @@
    `(which-key-command-description-face ((t (:foreground ,fg-main :weight normal))))
    `(which-key-group-description-face ((t (:foreground ,c3 :weight semi-bold))))
    `(eldoc-highlight-function-argument ((t (:foreground ,c4 :weight bold :slant italic))))
-
-   ;; ==========================================
-   ;; FILE & GIT
-   ;; ==========================================
    `(dired-directory ((t (:foreground ,c4 :weight bold))))
    `(dired-flagged ((t (:foreground ,col-error :weight bold))))
    `(dired-marked ((t (:foreground ,c3 :weight bold))))
@@ -198,10 +169,6 @@
    `(vc-edited-state ((t (:foreground ,c3 :weight semi-bold))))
    `(vc-missing-state ((t (:foreground ,col-error :weight bold))))
    `(vc-up-to-date-state ((t (:foreground ,fg-dim :weight light))))
-
-   ;; ==========================================
-   ;; LSP & TREE-SITTER
-   ;; ==========================================
    `(lsp-face-highlight-read ((t (:background ,bg-surf :weight normal))))
    `(lsp-face-highlight-textual ((t (:background ,bg-surf :weight bold))))
    `(lsp-face-highlight-write ((t (:background ,bg-overlay :weight bold))))
@@ -219,10 +186,6 @@
    `(ts-type ((t (:foreground ,col-type :weight semi-bold))))
    `(ts-variable ((t (:foreground ,fg-main :weight normal))))
    `(ts-variable-builtin ((t (:foreground ,col-type :weight semi-bold))))
-
-   ;; ==========================================
-   ;; LINTING & COMPILATION
-   ;; ==========================================
    `(flycheck-error ((t (:underline (:style wave :color ,col-error) :weight bold))))
    `(flycheck-warning ((t (:underline (:style wave :color ,col-warning) :weight bold))))
    `(flycheck-info ((t (:underline (:style wave :color ,c4) :weight semi-bold))))
@@ -237,10 +200,6 @@
    `(compilation-warning ((t (:foreground ,col-warning :weight bold))))
    `(compilation-error ((t (:foreground ,col-error :weight bold))))
    `(compilation-line-number ((t (:foreground ,fg-dim :weight light))))
-
-   ;; ==========================================
-   ;; ORG & MARKUP
-   ;; ==========================================
    `(org-level-1 ((t (:foreground ,c1 :weight extra-bold :height 1.2))))
    `(org-level-2 ((t (:foreground ,c4 :weight bold :height 1.1))))
    `(org-level-3 ((t (:foreground ,c3 :weight semi-bold))))
@@ -282,10 +241,6 @@
    `(rst-level-3 ((t (:foreground ,c3 :weight semi-bold))))
    `(rst-level-4 ((t (:foreground ,fg-main :weight bold))))
    `(rst-level-5 ((t (:foreground ,fg-dim :weight normal))))
-
-   ;; ==========================================
-   ;; DATA & WEB
-   ;; ==========================================
    `(json-key ((t (:foreground ,c1 :weight bold))))
    `(json-string ((t (:foreground ,c5 :slant italic))))
    `(json-number ((t (:foreground ,c3 :weight normal))))
@@ -302,10 +257,6 @@
    `(css-selector ((t (:foreground ,c1 :weight bold))))
    `(css-string ((t (:foreground ,c5 :slant italic))))
    `(css-color ((t (:foreground ,c3 :weight normal))))
-
-   ;; ==========================================
-   ;; TERMINAL & SHELL
-   ;; ==========================================
    `(term-color-black ((t (:foreground ,bg-overlay :background ,bg-overlay))))
    `(term-color-red ((t (:foreground ,col-error :background ,col-error :weight bold))))
    `(term-color-green ((t (:foreground ,c4 :background ,c4 :weight bold))))
@@ -324,10 +275,6 @@
    `(eshell-ls-readonly ((t (:foreground ,c3 :weight normal))))
    `(eshell-ls-special ((t (:foreground ,c1 :weight bold))))
    `(shell-option-switch ((t (:foreground ,c2 :weight normal))))
-
-   ;; ==========================================
-   ;; MISC & STANDARD
-   ;; ==========================================
    `(info-header-node ((t (:foreground ,c4 :weight bold))))
    `(info-xref ((t (:foreground ,col-link :underline t :weight semi-bold))))
    `(info-title-1 ((t (:foreground ,c1 :weight extra-bold))))
@@ -358,10 +305,5 @@
    `(powerline-active1 ((t (:background ,bg-surf :foreground ,fg-main :weight bold))))
    `(powerline-active2 ((t (:background ,bg-overlay :foreground ,fg-main :weight normal))))
    `(powerline-inactive1 ((t (:background ,bg-main :foreground ,fg-dim :weight light))))))
-
-;;;###autoload
-(when load-file-name
-  (add-to-list 'custom-theme-load-path
-               (file-name-as-directory (file-name-directory load-file-name))))
-
+(when load-file-name (add-to-list 'custom-theme-load-path (file-name-as-directory (file-name-directory load-file-name))))
 (provide-theme 'nord)
