@@ -20,11 +20,37 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
+;; 1. Define & auto-create directories (idempotent)
+(defvar my/backup-dir (expand-file-name "~/.emacs-backups/"))
+(defvar my/undo-dir (expand-file-name "~/.emacs-undo/"))
+(dolist (dir (list my/backup-dir my/undo-dir))
+  (make-directory dir t))
+
+;; 2. Timestamped backups
+(setq backup-by-copying t)
+(setq make-backup-file-name-function
+      (lambda (file)
+        (expand-file-name
+         (format "%s.%s~"
+                 (file-name-nondirectory file)
+                 (format-time-string "%Y%m%d_%H%M%S"))
+         my/backup-dir)))
+
+;; 3. Persistent undo (survives restarts/months)
+(use-package undo-tree
+  :ensure t
+  :init
+  (global-undo-tree-mode 1)
+  (setq undo-tree-auto-save-history t
+        undo-tree-history-directory-alist `(("." . ,my/undo-dir)))
+  :config
+  (setq undo-tree-history-compressor 'gzip))
+
 ;; ==============================================================================
 ;; 2. CORE UI & BEHAVIOR
 ;; ==============================================================================
 
-;; --- Appearance & Theme ---
+;; --- Appearance ---
 (menu-bar-mode 0)
 (tool-bar-mode 0)
 (scroll-bar-mode 0)
@@ -32,6 +58,7 @@
 (global-font-lock-mode 1)
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
+;; --- Theme ---
 (add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
 (load-theme 'rose-pine t)
 
@@ -210,13 +237,9 @@
   (add-to-list 'eglot-server-programs '(simpc-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(python-mode . ("ruff" "server"))))
 
-;; --- Ligatures (Prettify Symbols) ---
-(global-prettify-symbols-mode 1)
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (push '("->" . ?→) prettify-symbols-alist)
-            (push '("=>" . ?⇒) prettify-symbols-alist)
-            (push '("<-" . ?←) prettify-symbols-alist)
-            (push '("!=" . ?≠) prettify-symbols-alist)
-            (push '("==" . ?≡) prettify-symbols-alist)
-            (prettify-symbols-mode 1)))
+;; --- Ligatures ---
+(use-package ligature
+  :ensure t
+  :config
+  (ligature-set-ligatures 'prog-mode '("--" "---" "->" "=>" "<-" "!=" "!==" "==" "===" "&&" "||" "::" ".." "..." "...." "....." "<<=" ">>="))
+  (global-ligature-mode t))
