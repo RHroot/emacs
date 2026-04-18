@@ -36,7 +36,7 @@
 ;; --- Frame & Font ---
 (set-frame-parameter (selected-frame) 'alpha '(80 . 60))
 (add-to-list 'default-frame-alist '(alpha . (80 . 60)))
-(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-18"))
+(add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-16"))
 
 ;; --- Basic Behavior ---
 (setq dired-kill-when-opening-new-dired-buffer t)
@@ -84,9 +84,9 @@
   (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
 
 ;; --- Editing Utilities ---
-(global-set-key (kbd "C-,") 'duplicate-line)
+(global-set-key (kbd "C-,") 'my/duplicate-line)
 
-(defun duplicate-line ()
+(defun my/duplicate-line ()
   "Duplicate current line"
   (interactive)
   (let ((column (- (point) (line-beginning-position)))
@@ -140,7 +140,12 @@
 ;; --- Simpc Mode (Lightweight C/C++) ---
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 (require 'simpc-mode)
-(load-theme 'gruber-darker t)
+
+;; --- Load Custom Theme from File ---
+(let ((theme-file "~/.emacs.d/lisp/gruber-darker-theme.el"))
+  (when (file-exists-p theme-file)
+    (load-file theme-file)
+    (load-theme 'gruber-darker t)))
 
 (dolist (ext '("\\.c\\'" "\\.h\\'" "\\.cpp\\'" "\\.hpp\\'" "\\.cc\\'" "\\.hh\\'"))
   (add-to-list 'auto-mode-alist (cons ext 'simpc-mode)))
