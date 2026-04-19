@@ -57,6 +57,7 @@
 (electric-pair-mode 1)
 (global-font-lock-mode 1)
 (global-display-line-numbers-mode)
+(which-key-mode 1)
 (setq display-line-numbers-type 'relative)
 
 ;; --- Theme ---
@@ -71,7 +72,7 @@
   Cancel: ESC or q"
   (interactive)
   (let* ((themes '(rose-pine nord gruber-darker tokyo-night dracula catppuccin-mocha
-               one-dark ayu-dark poimandres night-owl vesper))
+			     one-dark ayu-dark poimandres night-owl vesper))
          (len (length themes))
          (idx 0)
          (orig-theme (car custom-enabled-themes))
@@ -174,7 +175,7 @@
 (global-set-key (kbd "C-c p !") 'project-compile)
 
 ;; --- Compilation ---
-(global-set-key (kbd "C-c r") 'compile)
+(global-set-key (kbd "C-c c c") 'compile)
 
 (defun my-set-compile-command ()
   "Set compile command dynamically based on the current file."
@@ -230,6 +231,7 @@
   (define-key nix-mode-map (kbd "C-c f") #'my/nix-indent-buffer))
 
 ;; --- Web/Config (JSON, CSS, JS, TS, MD, YAML) ---
+
 ;; 1. Completion (Eglot)
 (dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook))
   (add-hook hook #'eglot-ensure))
@@ -271,5 +273,37 @@
 ;; --- Eglot Global Configuration ---
 (with-eval-after-load 'eglot
   (define-key eglot-mode-map (kbd "C-c f") 'eglot-format-buffer)
+  (define-key eglot-mode-map (kbd "C-c r n") 'eglot-rename)
+  (define-key eglot-mode-map (kbd "C-c c a") 'eglot-code-actions)
   (add-to-list 'eglot-server-programs '(simpc-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(python-mode . ("ruff" "server"))))
+
+;; --- Completion ---
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.0)
+  (corfu-quit-at-boundary 'separator)
+  (corfu-echo-documentation 0.25)
+  (corfu-preview-current 'insert)
+  (corfu-preselect-first nil)
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  :config
+  ;; Keybindings: use vectors for special keys, strings for others
+  (define-key corfu-map (kbd "M-SPC") #'corfu-insert-separator)
+  (define-key corfu-map (kbd "RET") nil)
+  (define-key corfu-map (kbd "TAB") #'corfu-next)
+  (define-key corfu-map (kbd "S-TAB") #'corfu-previous)
+  (define-key corfu-map (kbd "S-<return>") #'corfu-insert)
+
+  ;; Eshell: disable auto-corfu, stricter quit behavior
+  (add-hook 'eshell-mode-hook
+            (lambda ()
+              (setq-local corfu-quit-at-boundary t
+                          corfu-quit-no-match t
+                          corfu-auto nil)
+              (corfu-mode))))
