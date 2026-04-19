@@ -72,7 +72,7 @@
   Cancel: ESC or q"
   (interactive)
   (let* ((themes '(rose-pine nord gruber-darker tokyo-night dracula catppuccin-mocha
-			     one-dark ayu-dark poimandres night-owl vesper))
+			                 one-dark ayu-dark poimandres night-owl vesper))
          (len (length themes))
          (idx 0)
          (orig-theme (car custom-enabled-themes))
@@ -293,14 +293,13 @@
   (global-corfu-mode)
   (corfu-history-mode)
   :config
-  ;; Keybindings: use vectors for special keys, strings for others
+
   (define-key corfu-map (kbd "M-SPC") #'corfu-insert-separator)
   (define-key corfu-map (kbd "RET") nil)
-  (define-key corfu-map (kbd "TAB") #'corfu-next)
-  (define-key corfu-map (kbd "S-TAB") #'corfu-previous)
+  (define-key corfu-map (kbd "TAB") #'nil)
+  (define-key corfu-map (kbd "S-TAB") #'nil)
   (define-key corfu-map (kbd "S-<return>") #'corfu-insert)
 
-  ;; Eshell: disable auto-corfu, stricter quit behavior
   (add-hook 'eshell-mode-hook
             (lambda ()
               (setq-local corfu-quit-at-boundary t
