@@ -58,9 +58,46 @@
 (global-font-lock-mode 1)
 (global-display-line-numbers-mode)
 (setq display-line-numbers-type 'relative)
+
 ;; --- Theme ---
 (add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
-(load-theme 'rose-pine t)
+(load-theme 'vesper t)
+
+;; --- Theme Switcher ---
+(defun my/theme-picker ()
+  "Interactive theme switcher with live preview.
+  Navigate: n/j/↓ or p/k/↑
+  Confirm: RET or SPC
+  Cancel: ESC or q"
+  (interactive)
+  (let* ((themes '(rose-pine nord gruber-darker tokyo-night dracula catppuccin-mocha
+               one-dark ayu-dark poimandres night-owl vesper))
+         (len (length themes))
+         (idx 0)
+         (orig-theme (car custom-enabled-themes))
+         (current (nth idx themes))
+         (done nil))
+    (load-theme current t)
+    (sit-for 0)
+    (while (not done)
+      (let ((key (read-key (format "🎨 Theme: %-20s | n/j↓ p/k↑ | RET/SPC confirm | ESC/q cancel "
+                                   (symbol-name current)))))
+        (cond
+         ((memq key '(?n ?j down [down])) (setq idx (mod (1+ idx) len)))
+         ((memq key '(?p ?k up [up]))     (setq idx (mod (1- idx) len)))
+         ((memq key '(13 32 return space)) (setq done t))
+         ((memq key '(27 ?q escape [escape])) (setq done 'cancel))
+         (t nil))
+        (unless done
+          (setq current (nth idx themes))
+          (load-theme current t)
+          (sit-for 0))))
+    (if (eq done t)
+        (message "✅ Theme set to: %s" current)
+      (disable-theme current)
+      (when orig-theme (load-theme orig-theme t))
+      (message "↩️ Canceled. Reverted to: %s" orig-theme))))
+(global-set-key (kbd "C-c t") #'my/theme-picker)
 
 ;; --- Frame & Font ---
 (add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-18"))
@@ -236,10 +273,3 @@
   (define-key eglot-mode-map (kbd "C-c f") 'eglot-format-buffer)
   (add-to-list 'eglot-server-programs '(simpc-mode . ("clangd")))
   (add-to-list 'eglot-server-programs '(python-mode . ("ruff" "server"))))
-
-;; --- Ligatures ---
-(use-package ligature
-  :ensure t
-  :config
-  (ligature-set-ligatures 'prog-mode '("--" "---" "->" "=>" "<-" "!=" "!==" "==" "===" "&&" "||" "::" ".." "..." "...." "....." "<<=" ">>="))
-  (global-ligature-mode t))
