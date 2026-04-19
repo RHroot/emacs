@@ -6,3 +6,6 @@
 !lisp/
 !lisp/**
 !.gitignore
+
+# Don't track these type of files as well
+*elc
