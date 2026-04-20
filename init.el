@@ -286,7 +286,7 @@ ode -1)
   Cancel: ESC or q"
   (interactive)
   (let* ((themes '(vesper gruber-darker rose-pine catppuccin-mocha tokyo-night
-			    one-dark night-owl ayu-dark nord dracula poimandres))
+			  one-dark night-owl ayu-dark nord dracula poimandres))
          (len (length themes))
          (idx 0)
          (orig-theme (car custom-enabled-themes))
