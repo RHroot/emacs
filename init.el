@@ -276,3 +276,40 @@ ode -1)
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
 (load-theme 'vesper t)
+
+;; Custom Theme Switcher
+
+(defun my/theme-picker ()
+  "Interactive theme switcher with live preview.
+  Navigate: n/j/↓ or p/k/↑
+  Confirm: RET or SPC
+  Cancel: ESC or q"
+  (interactive)
+  (let* ((themes '(vesper gruber-darker rose-pine catppuccin-mocha tokyo-night
+			    one-dark night-owl ayu-dark nord dracula poimandres))
+         (len (length themes))
+         (idx 0)
+         (orig-theme (car custom-enabled-themes))
+         (current (nth idx themes))
+         (done nil))
+    (load-theme current t)
+    (sit-for 0)
+    (while (not done)
+      (let ((key (read-key (format "🎨 Theme: %-20s | n/j↓ p/k↑ | RET/SPC confirm | ESC/q cancel "
+                                   (symbol-name current)))))
+        (cond
+         ((memq key '(?n ?j down [down])) (setq idx (mod (1+ idx) len)))
+         ((memq key '(?p ?k up [up]))     (setq idx (mod (1- idx) len)))
+         ((memq key '(13 32 return space)) (setq done t))
+         ((memq key '(27 ?q escape [escape])) (setq done 'cancel))
+         (t nil))
+        (unless done
+          (setq current (nth idx themes))
+          (load-theme current t)
+          (sit-for 0))))
+    (if (eq done t)
+        (message "✅ Theme set to: %s" current)
+      (disable-theme current)
+      (when orig-theme (load-theme orig-theme t))
+      (message "↩️ Canceled. Reverted to: %s" orig-theme))))
+(global-set-key (kbd "C-c t") #'my/theme-picker)
