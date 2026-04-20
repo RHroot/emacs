@@ -304,9 +304,21 @@
                           corfu-quit-no-match t
                           corfu-auto nil)
               (corfu-mode))))
+(add-hook 'git-commit-mode-hook
+          (lambda ()
+            (corfu-mode -1)
+            (setq-local completion-at-point-functions nil)))
+
+;; Suppress "No match" messages in minibuffer
+(defun my/suppress-no-match (orig-fun &rest args)
+  "Call ORIG-FUN with ARGS, but skip if message starts with \"No match\"."
+  (let ((msg (car args)))
+    (unless (and (stringp msg) (string-match-p "\\`No match" msg))
+      (apply orig-fun args))))
+
+(advice-add 'minibuffer-message :around #'my/suppress-no-match)
 
 ;; --- Org Mode ---
-
 (require 'org)
 (require 'ob-tangle)        ; Enable code extraction
 (setq org-confirm-babel-evaluate nil)  ; Skip confirmation (optional)
@@ -323,22 +335,23 @@
             (setq org-src-fontify-natively t)    ; Syntax highlight src blocks
             (setq org-src-tab-acts-natively t)   ; TAB works inside src blocks
             (setq org-src-preserve-indentation nil) ; Let Org manage indentation
-            (add-hook 'after-save-hook #'org-babel-tangle nil t)))
 
-;; Optional: syntax highlighting in src blocks
-(add-hook 'org-mode-hook #'turn-on-font-lock)
+	    ;; Syntax Highlighting in src blocks
+	    (add-hook 'org-mode-hook #'turn-on-font-lock)
 
-(custom-set-faces
- '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
- '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
- '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
- '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
- '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
- '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
- '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
+	    ;; Variable Fonts in Org Mode
+	    (custom-set-faces
+	     '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+	     '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+	     '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
+	     '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
+	     '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
+	     '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
+	     '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
 
-(use-package diff-hl
-  :ensure t
-  :config
-  (global-diff-hl-mode)
-  (diff-hl-flydiff-mode))
+	    ;; To get git diffs
+	    (use-package diff-hl
+	      :ensure t
+	      :config
+	      (global-diff-hl-mode)
+	      (diff-hl-flydiff-mode))
