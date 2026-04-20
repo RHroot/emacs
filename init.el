@@ -72,7 +72,7 @@
   Cancel: ESC or q"
   (interactive)
   (let* ((themes '(rose-pine nord gruber-darker tokyo-night dracula catppuccin-mocha
-			                 one-dark ayu-dark poimandres night-owl vesper))
+			     one-dark ayu-dark poimandres night-owl vesper))
          (len (length themes))
          (idx 0)
          (orig-theme (car custom-enabled-themes))
@@ -135,13 +135,11 @@
 ;; ==============================================================================
 
 ;; --- Navigation ---
-(global-set-key (kbd "C-c C-n") 'next-buffer) ;; Open the Next Buffer
-(global-set-key (kbd "C-c C-p") 'previous-buffer) ;; open the Previous Buffer
 (global-set-key (kbd "C-c C-o") 'ffap) ;; Open the file path under the cursor
 (global-set-key (kbd "C-c k") 'my/kill-all-buffers) ;; Kill all the buffers except the one you are on
 (global-set-key (kbd "C-c C-r") 'recentf-open-files) ;; Open Recent Files
 (global-set-key (kbd "M-;") 'comment-line) ;; To comment files default mapped to 'comment-dwim'
-(global-set-key (kbd "C-c e") 'eval-buffer) ;; To eval the current buffer
+(global-set-key (kbd "C-c C-e") 'eval-buffer) ;; To eval the current buffer
 
 (defun my/kill-all-buffers ()
   "Kill all buffers except the current one."
@@ -306,3 +304,35 @@
                           corfu-quit-no-match t
                           corfu-auto nil)
               (corfu-mode))))
+
+;; --- Org Mode ---
+
+(require 'org)
+(require 'ob-tangle)        ; Enable code extraction
+(setq org-confirm-babel-evaluate nil)  ; Skip confirmation (optional)
+
+;; Auto-tangle on save
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-indent-mode 1)
+            (setq org-hide-leading-stars t)      ; Hide extra * for clean bullets
+            (setq org-pretty-entities t)         ; Render \alpha → α, \[Lambda] → Λ
+            (setq org-startup-folded 'content)   ; Fold subtrees on open (optional)
+            
+            ;; Better source block display
+            (setq org-src-fontify-natively t)    ; Syntax highlight src blocks
+            (setq org-src-tab-acts-natively t)   ; TAB works inside src blocks
+            (setq org-src-preserve-indentation nil) ; Let Org manage indentation
+            (add-hook 'after-save-hook #'org-babel-tangle nil t)))
+
+;; Optional: syntax highlighting in src blocks
+(add-hook 'org-mode-hook #'turn-on-font-lock)
+
+(custom-set-faces
+ '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+ '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+ '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
+ '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
+ '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
+ '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
+ '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))
