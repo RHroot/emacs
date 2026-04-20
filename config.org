@@ -44,6 +44,7 @@
 #+end_src
 
 ** Global Keybinds
+
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
   (global-set-key (kbd "C-c C-o") 'ffap)
   (global-set-key (kbd "C-c C-r") 'recentf-open-files)
@@ -54,6 +55,10 @@
   (global-set-key (kbd "C-c p d") 'project-dired)
   (global-set-key (kbd "C-c p !") 'project-compile)
   (global-set-key (kbd "C-c c c") 'compile)
+  (global-set-key (kbd "<f5>")
+  		(lambda ()
+  		  (interactive)
+  		  (revert-buffer :ignore-auto :noconfirm)))
 
 #+end_src
 

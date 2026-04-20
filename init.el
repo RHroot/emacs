@@ -20,22 +20,23 @@
 ;; Basic Behavour Tweaks
 
 (setq tab-width 4
-        scroll-step 1
-        scroll-margin 8
-        indent-tabs-mode nil
-        vc-follow-symlinks t
-        make-backup-files nil
-        inhibit-startup-screen t
-        scroll-conservatively 101
-        gc-cons-threshold (* 50 1000 1000)
-        dired-kill-when-opening-new-dired-buffer t)
-  (put 'dired-find-alternate-file 'disabled nil)
+      scroll-step 1
+      scroll-margin 8
+      indent-tabs-mode nil
+      vc-follow-symlinks t
+      make-backup-files nil
+      inhibit-startup-screen t
+      scroll-conservatively 101
+      gc-cons-threshold (* 50 1000 1000)
+      dired-kill-when-opening-new-dired-buffer t)
+(put 'dired-find-alternate-file 'disabled nil)
 
 (save-place-mode 1)
 (recentf-mode 1)
 (setq recentf-max-menu-items 20)
 
 ;; Global Keybinds
+
 
 (global-set-key (kbd "C-c C-o") 'ffap)
 (global-set-key (kbd "C-c C-r") 'recentf-open-files)
@@ -46,6 +47,10 @@
 (global-set-key (kbd "C-c p d") 'project-dired)
 (global-set-key (kbd "C-c p !") 'project-compile)
 (global-set-key (kbd "C-c c c") 'compile)
+(global-set-key (kbd "<f5>")
+		(lambda ()
+		  (interactive)
+		  (revert-buffer :ignore-auto :noconfirm)))
 
 ;; Setting up Backup with Timestamp
 
@@ -232,45 +237,45 @@
 ;; Completion
 
 (ido-mode 1)
-  (setq ido-enable-flex-matching t)
-  (setq ido-everywhere t)
+(setq ido-enable-flex-matching t)
+(setq ido-everywhere t)
 
-  (icomplete-vertical-mode 1)
-  (setq icomplete-separator "\n")
-  (setq icomplete-max-delayed-matches 50)
+(icomplete-vertical-mode 1)
+(setq icomplete-separator "\n")
+(setq icomplete-max-delayed-matches 50)
 
-  (use-package corfu
-    :custom
-    (corfu-cycle t)
-    (corfu-auto t)
-    (corfu-auto-prefix 2)
-    (corfu-auto-delay 0.0)
-    (corfu-quit-at-boundary 'separator)
-    (corfu-echo-documentation 0.25)
-    (corfu-preview-current 'insert)
-    (corfu-preselect-first nil)
-    :init
-    (global-corfu-mode)
-    (corfu-history-mode)
-    :config
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  (corfu-auto t)
+  (corfu-auto-prefix 2)
+  (corfu-auto-delay 0.0)
+  (corfu-quit-at-boundary 'separator)
+  (corfu-echo-documentation 0.25)
+  (corfu-preview-current 'insert)
+  (corfu-preselect-first nil)
+  :init
+  (global-corfu-mode)
+  (corfu-history-mode)
+  :config
 
-    (define-key corfu-map (kbd "M-SPC") #'corfu-insert-separator)
-    (define-key corfu-map (kbd "RET") nil)
-    (define-key corfu-map (kbd "TAB") #'nil)
-    (define-key corfu-map (kbd "S-TAB") #'nil)
-    (define-key corfu-map (kbd "S-<return>") #'corfu-insert)
+  (define-key corfu-map (kbd "M-SPC") #'corfu-insert-separator)
+  (define-key corfu-map (kbd "RET") nil)
+  (define-key corfu-map (kbd "TAB") #'nil)
+  (define-key corfu-map (kbd "S-TAB") #'nil)
+  (define-key corfu-map (kbd "S-<return>") #'corfu-insert)
 
-    (add-hook 'eshell-mode-hook
-              (lambda ()
-                (setq-local corfu-quit-at-boundary t
-                            corfu-quit-no-match t
-                            corfu-auto nil)
-                (corfu-mode))))
-  (add-hook 'git-commit-mode-hook
+  (add-hook 'eshell-mode-hook
             (lambda ()
-              (corfu-m
-ode -1)
-              (setq-local completion-at-point-functions nil)))
+              (setq-local corfu-quit-at-boundary t
+                          corfu-quit-no-match t
+                          corfu-auto nil)
+              (corfu-mode))))
+(add-hook 'git-commit-mode-hook
+          (lambda ()
+            (corfu-m
+	     ode -1)
+            (setq-local completion-at-point-functions nil)))
 
 ;; Load Theme
 
