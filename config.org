@@ -1,0 +1,304 @@
+#+TITLE: Emacs Config
+#+PROPERTY: header-args :tangle yes
+
+** Custom Files and Directories
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (unless (file-exists-p custom-file)
+    (write-region "" nil custom-file))
+  (load custom-file 'noerror 'nomessage)
+
+#+end_src
+
+** Basic UI Tweaks
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (menu-bar-mode 0)
+  (tool-bar-mode 0)
+  (scroll-bar-mode 0)
+  (electric-pair-mode 1)
+  (global-font-lock-mode 1)
+  (global-display-line-numbers-mode)
+  (which-key-mode 1)
+  (setq display-line-numbers-type 'relative)
+  (add-to-list 'default-frame-alist '(font . "JetBrainsMono Nerd Font-18"))
+  
+#+end_src
+
+** Basic Behavour Tweaks
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (setq tab-width 4
+          scroll-step 1
+          scroll-margin 8
+          indent-tabs-mode nil
+          vc-follow-symlinks t
+          make-backup-files nil
+          inhibit-startup-screen t
+          scroll-conservatively 101
+          gc-cons-threshold (* 50 1000 1000)
+          dired-kill-when-opening-new-dired-buffer t)
+    (put 'dired-find-alternate-file 'disabled nil)
+
+  (save-place-mode 1)
+  (recentf-mode 1)
+  (setq recentf-max-menu-items 20)
+  
+#+end_src
+
+** Global Keybinds
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (global-set-key (kbd "C-c C-o") 'ffap)
+  (global-set-key (kbd "C-c C-r") 'recentf-open-files)
+  (global-set-key (kbd "M-;") 'comment-line)
+  (global-set-key (kbd "C-c C-e") 'eval-buffer)
+  (global-set-key (kbd "C-c p f") 'project-find-file)
+  (global-set-key (kbd "C-c p g") 'project-search)
+  (global-set-key (kbd "C-c p d") 'project-dired)
+  (global-set-key (kbd "C-c p !") 'project-compile)
+  (global-set-key (kbd "C-c c c") 'compile)
+  
+#+end_src
+
+** Setting up Backup with Timestamp
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (defvar my/backup-dir (expand-file-name "~/.emacs-backups/"))
+  (dolist (dir (list my/backup-dir))
+    (make-directory dir t))
+
+  (setq backup-by-copying t)
+  (setq make-backup-file-name-function
+        (lambda (file)
+          (expand-file-name
+           (format "%s.%s~"
+                   (file-name-nondirectory file)
+                   (format-time-string "%Y%m%d_%H%M%S"))
+           my/backup-dir)))
+
+#+end_src
+
+** Custom Functions
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (defun my/kill-all-buffers ()
+    "Kill all buffers except the current one."
+    (interactive)
+    (mapc 'kill-buffer (delq (current-buffer) (buffer-list))))
+  (global-set-key (kbd "C-c k") 'my/kill-all-buffers)
+
+  (defun my/duplicate-line ()
+    "Duplicate current line"
+    (interactive)
+    (let ((column (- (point) (line-beginning-position)))
+          (line (string-trim-right (thing-at-point 'line t))))
+      (move-end-of-line 1)
+      (newline)
+      (insert line)
+      (move-beginning-of-line 1)
+      (forward-char column)))
+  (global-set-key (kbd "C-,") 'my/duplicate-line)
+
+  (defun my/format-elisp-buffer ()
+    "Format the current Emacs Lisp buffer using standard indentation."
+    (interactive)
+    (indent-region (point-min) (point-max)))
+  (add-hook 'emacs-lisp-mode-hook
+            (lambda ()
+              (local-set-key (kbd "C-c f") #'my/format-elisp-buffer)))
+
+  (defun my/prettierd-format-buffer ()
+    "Format current buffer using prettierd."
+    (interactive)
+    (let ((file-name (buffer-file-name)))
+      (if file-name
+          (condition-case nil
+              (call-process-region (point-min) (point-max) "prettierd" t t nil "--stdin-filepath" file-name)
+            (error (message "Prettierd failed or not found")))
+        (message "Buffer has no file name"))))
+  (dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook markdown-mode-hook yaml-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (local-set-key (kbd "C-c f") #'my/prettierd-format-buffer))))
+
+  (defun my-set-compile-command ()
+    "Set compile command dynamically based on the current file."
+    (let ((file (buffer-file-name)))
+      (when file
+        (let ((name (file-name-nondirectory (file-name-sans-extension file))))
+          (setq-local compile-command
+                      (cond
+                       ((derived-mode-p 'python-mode)
+                        (format "python3 %s" file))
+                       ((derived-mode-p 'simpc-mode)
+                        (if (string-match-p "\\.cpp\\|\\.cc\\|\\.hpp\\|\\.hh" file)
+                            (format "g++ -Wall -o %s %s && ./%s" name file name)
+                          (format "gcc -Wall -o %s %s && ./%s" name file name)))
+                       (t "make -k")))))))
+  (add-hook 'prog-mode-hook #'my-set-compile-command)
+
+  (defun my/suppress-no-match (orig-fun &rest args)
+    "Call ORIG-FUN with ARGS, but skip if message starts with \"No match\"."
+    (let ((msg (car args)))
+      (unless (and (stringp msg) (string-match-p "\\`No match" msg))
+        (apply orig-fun args))))
+  (advice-add 'minibuffer-message :around #'my/suppress-no-match)
+  
+#+end_src
+
+** Org Mode
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (require 'org)
+  (require 'ob-tangle)
+  (setq org-confirm-babel-evaluate nil)
+
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-indent-mode 1)
+              (setq org-hide-leading-stars t)
+              (setq org-pretty-entities t)
+              (setq org-startup-folded 'content)
+              (setq org-src-fontify-natively t)
+              (setq org-src-tab-acts-natively t)
+              (setq org-src-preserve-indentation nil)
+
+  	    (custom-set-faces
+  	     '(org-level-1 ((t (:inherit outline-1 :height 1.7))))
+  	     '(org-level-2 ((t (:inherit outline-2 :height 1.6))))
+  	     '(org-level-3 ((t (:inherit outline-3 :height 1.5))))
+  	     '(org-level-4 ((t (:inherit outline-4 :height 1.4))))
+  	     '(org-level-5 ((t (:inherit outline-5 :height 1.3))))
+  	     '(org-level-6 ((t (:inherit outline-5 :height 1.2))))
+  	     '(org-level-7 ((t (:inherit outline-5 :height 1.1)))))))
+
+#+end_src
+** Package Manager Setup
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (require 'package)
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+  (package-initialize)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
+  (setq use-package-always-ensure t)
+  
+#+end_src
+
+** Setting up good Undo
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (defvar my/undo-dir (expand-file-name "~/.emacs-undo/"))
+  (dolist (dir (list my/undo-dir))
+    (make-directory dir t))
+
+  (use-package undo-tree
+    :ensure t
+    :init
+    (global-undo-tree-mode 1)
+    (setq undo-tree-auto-save-history t
+  	undo-tree-history-directory-alist `(("." . ,my/undo-dir)))
+    :config
+    (setq undo-tree-history-compressor 'gzip))
+
+#+end_src
+** maGIT
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (use-package magit
+    :bind (("C-x g" . magit-status)))
+  (use-package diff-hl
+    :ensure t
+    :config
+    (global-diff-hl-mode)
+    (diff-hl-flydiff-mode))
+
+#+end_src
+** Lsp's
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (with-eval-after-load 'eglot
+    (define-key eglot-mode-map (kbd "C-c f") 'eglot-format-buffer)
+    (define-key eglot-mode-map (kbd "C-c r n") 'eglot-rename)
+    (define-key eglot-mode-map (kbd "C-c c a") 'eglot-code-actions)
+    (add-to-list 'eglot-server-programs '(simpc-mode . ("clangd")))
+    (add-to-list 'eglot-server-programs '(python-mode . ("ruff" "server"))))
+
+  (add-to-list 'load-path "~/.emacs.d/lisp/")
+  (require 'simpc-mode)
+
+  (dolist (ext '("\\.c\\'" "\\.h\\'" "\\.cpp\\'" "\\.hpp\\'" "\\.cc\\'" "\\.hh\\'"))
+    (add-to-list 'auto-mode-alist (cons ext 'simpc-mode)))
+
+  (add-hook 'simpc-mode-hook #'eglot-ensure)
+  (add-hook 'simpc-mode-hook
+            (lambda ()
+              (setq-local compile-command
+                          (let ((file (buffer-file-name))
+                                (name (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+                            (if file
+                                (if (string-match-p "\\.cpp\\|\\.cc\\|\\.hpp\\|\\.hh" file)
+                                    (format "g++ -Wall -o %s %s && ./%s" name file name)
+                                  (format "gcc -Wall -o %s %s && ./%s" name file name))
+                              "make -k")))))
+
+  (add-hook 'python-mode-hook #'eglot-ensure)
+  
+  (defun my/nix-indent-buffer ()
+    "Indent the current Nix buffer."
+    (interactive)
+    (indent-region (point-min) (point-max)))
+  (use-package nix-mode
+    :mode "\\.nix\\'"
+    :config
+    (define-key nix-mode-map (kbd "C-c f") #'my/nix-indent-buffer))
+
+  (dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook))
+    (add-hook hook #'eglot-ensure))
+
+#+end_src
+
+** Completion
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (ido-mode 1)
+  (setq ido-enable-flex-matching t)
+  (setq ido-everywhere t)
+
+  (icomplete-vertical-mode 1)
+  (setq icomplete-separator "\n")
+  (setq icomplete-max-delayed-matches 50)
+
+  (use-package corfu
+    :custom
+    (corfu-cycle t)
+    (corfu-auto t)
+    (corfu-auto-prefix 2)
+    (corfu-auto-delay 0.0)
+    (corfu-quit-at-boundary 'separator)
+    (corfu-echo-documentation 0.25)
+    (corfu-preview-current 'insert)
+    (corfu-preselect-first nil)
+    :init
+    (global-corfu-mode)
+    (corfu-history-mode)
+    :config
+
+    (define-key corfu-map (kbd "M-SPC") #'corfu-insert-separator)
+    (define-key corfu-map (kbd "RET") nil)
+    (define-key corfu-map (kbd "TAB") #'nil)
+    (define-key corfu-map (kbd "S-TAB") #'nil)
+    (define-key corfu-map (kbd "S-<return>") #'corfu-insert)
+
+    (add-hook 'eshell-mode-hook
+              (lambda ()
+                (setq-local corfu-quit-at-boundary t
+                            corfu-quit-no-match t
+                            corfu-auto nil)
+                (corfu-mode))))
+  (add-hook 'git-commit-mode-hook
+            (lambda ()
+              (corfu-m
+ode -1)
+              (setq-local completion-at-point-functions nil)))
+
+#+end_src
+
+** Load Theme
+#+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
+  (load-theme 'vesper t)
+  
+#+end_src

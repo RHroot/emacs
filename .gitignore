@@ -2,6 +2,7 @@
 *
 
 # But track these specific config files
+!config.org
 !init.el
 !lisp/
 !lisp/**
