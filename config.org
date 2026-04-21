@@ -462,7 +462,7 @@
 #+end_src
 
 * Themes
-
+** Theme Faces Body
 #+name: theme-faces-body
 #+begin_src emacs-lisp :tangle no
   `(default ((t (:foreground ,fg-main :background ,bg-main))))
