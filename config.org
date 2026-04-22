@@ -121,22 +121,6 @@
               (lambda ()
                 (local-set-key (kbd "C-c f") #'my/prettierd-format-buffer))))
 
-  (defun my-set-compile-command ()
-    "Set compile command dynamically based on the current file."
-    (let ((file (buffer-file-name)))
-      (when file
-        (let ((name (file-name-nondirectory (file-name-sans-extension file))))
-          (setq-local compile-command
-                      (cond
-                       ((derived-mode-p 'python-mode)
-                        (format "python3 %s" file))
-                       ((derived-mode-p 'simpc-mode)
-                        (if (string-match-p "\\.cpp\\|\\.cc\\|\\.hpp\\|\\.hh" file)
-                            (format "g++ -Wall -o %s %s && ./%s" name file name)
-                          (format "gcc -Wall -o %s %s && ./%s" name file name)))
-                       (t "make -k")))))))
-  (add-hook 'prog-mode-hook #'my-set-compile-command)
-
   (defun my/suppress-no-match (orig-fun &rest args)
     "Call ORIG-FUN with ARGS, but skip if message starts with \"No match\"."
     (let ((msg (car args)))
@@ -214,12 +198,18 @@
 #+end_src
 ** Lsp's
 #+begin_src emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes :comments org
+  (require 'eglot)
+
+  (setq read-process-output-max (* 1024 1024))
+
   (with-eval-after-load 'eglot
     (define-key eglot-mode-map (kbd "C-c f") 'eglot-format-buffer)
     (define-key eglot-mode-map (kbd "C-c r n") 'eglot-rename)
     (define-key eglot-mode-map (kbd "C-c c a") 'eglot-code-actions)
-    (add-to-list 'eglot-server-programs '(simpc-mode . ("clangd")))
-    (add-to-list 'eglot-server-programs '(python-mode . ("ruff" "server"))))
+    (add-to-list 'eglot-server-programs
+                 '(simpc-mode . ("clangd" "--background-index" "--clang-tidy")))
+    (add-to-list 'eglot-server-programs
+                 '(python-mode . ("ruff" "server" "--preview"))))
 
   (add-to-list 'load-path "~/.emacs.d/lisp/")
   (require 'simpc-mode)
@@ -227,31 +217,55 @@
   (dolist (ext '("\\.c\\'" "\\.h\\'" "\\.cpp\\'" "\\.hpp\\'" "\\.cc\\'" "\\.hh\\'"))
     (add-to-list 'auto-mode-alist (cons ext 'simpc-mode)))
 
-  (add-hook 'simpc-mode-hook #'eglot-ensure)
   (add-hook 'simpc-mode-hook
             (lambda ()
+              (eglot-ensure)
               (setq-local compile-command
-                          (let ((file (buffer-file-name))
-                                (name (file-name-nondirectory (file-name-sans-extension (buffer-file-name)))))
+          		(let* ((file (buffer-file-name))
+          		       (ext  (when file (file-name-extension file)))
+          		       (name (when file
+          			       (file-name-nondirectory
+          				(file-name-sans-extension file)))))
                             (if file
-                                (if (string-match-p "\\.cpp\\|\\.cc\\|\\.hpp\\|\\.hh" file)
-                                    (format "g++ -Wall -o %s %s && ./%s" name file name)
-                                  (format "gcc -Wall -o %s %s && ./%s" name file name))
+                                (if (member ext '("cpp" "cc" "hpp" "hh"))
+                                    (format "g++ -Wall -std=c++20 -O2 -g -o \"%s\" \"%s\" && ./%s" name file name)
+                                  (format "gcc -Wall -O2 -g -o \"%s\" \"%s\" && ./%s" name file name))
                               "make -k")))))
 
-  (add-hook 'python-mode-hook #'eglot-ensure)
+  (add-hook 'python-mode-hook
+            (lambda ()
+              (eglot-ensure)
+              (when (buffer-file-name)
+                (setq-local compile-command
+                            (format "python3 \"%s\"" (buffer-file-name))))))
 
-  (defun my/nix-indent-buffer ()
-    "Indent the current Nix buffer."
-    (interactive)
-    (indent-region (point-min) (point-max)))
-  (use-package nix-mode
-    :mode "\\.nix\\'"
-    :config
-    (define-key nix-mode-map (kbd "C-c f") #'my/nix-indent-buffer))
+  (add-hook 'sh-mode-hook
+      	  (lambda ()
+      	    (eglot-ensure)))
+
+  (add-hook 'nix-mode-hook
+      	  (lambda ()
+      	    (eglot-ensure)))
+
+  (use-package markdown-mode
+    :mode ("\\.md\\'" . markdown-mode))
+  (add-hook 'markdown-mode-hook
+      	  (lambda ()
+      	    (eglot-ensure)))
 
   (dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook))
-    (add-hook hook #'eglot-ensure))
+    (add-hook hook
+        	    (lambda ()
+        	      (eglot-ensure))))
+
+  (add-hook 'eglot-managed-mode-hook
+            (lambda ()
+              (eldoc-mode 1)
+              (unless (member major-mode
+                              '(json-mode css-mode js-mode typescript-mode))
+                (add-hook 'before-save-hook
+                          #'eglot-format-buffer
+                          nil t))))
 
 #+end_src
 
@@ -294,8 +308,7 @@
                 (corfu-mode))))
   (add-hook 'git-commit-mode-hook
             (lambda ()
-              (corfu-m
-  	     ode -1)
+              (corfu-mode -1)
               (setq-local completion-at-point-functions nil)))
 
 #+end_src
