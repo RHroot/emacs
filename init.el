@@ -37,7 +37,6 @@
 
 ;; Global Keybinds
 
-
 (global-set-key (kbd "C-c C-o") 'ffap)
 (global-set-key (kbd "C-c C-r") 'recentf-open-files)
 (global-set-key (kbd "M-;") 'comment-line)
@@ -267,9 +266,9 @@
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
 
-(icomplete-vertical-mode 1)
-(setq icomplete-separator "\n")
-(setq icomplete-max-delayed-matches 50)
+(use-package smex)
+(global-set-key (kbd "M-x") 'smex)
+(global-set-key (kbd "C-c C-c M-x") 'execute-extended-command)
 
 (use-package corfu
   :custom
@@ -303,10 +302,21 @@
             (corfu-mode -1)
             (setq-local completion-at-point-functions nil)))
 
+;; Multiple Cursors Support
+
+(use-package multiple-cursors)
+
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-\"") 'mc/skip-to-next-like-this)
+(global-set-key (kbd "C-:") 'mc/skip-to-previous-like-this)
+
 ;; Load Theme
 
 (add-to-list 'custom-theme-load-path "~/.emacs.d/lisp/")
-(load-theme 'vesper t)
+(load-theme 'rose-pine t)
 
 ;; Custom Theme Switcher
 
