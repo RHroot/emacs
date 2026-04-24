@@ -221,11 +221,11 @@
             (lambda ()
               (eglot-ensure)
               (setq-local compile-command
-          		(let* ((file (buffer-file-name))
-          		       (ext  (when file (file-name-extension file)))
-          		       (name (when file
-          			       (file-name-nondirectory
-          				(file-name-sans-extension file)))))
+            		(let* ((file (buffer-file-name))
+            		       (ext  (when file (file-name-extension file)))
+            		       (name (when file
+            			       (file-name-nondirectory
+            				(file-name-sans-extension file)))))
                             (if file
                                 (if (member ext '("cpp" "cc" "hpp" "hh"))
                                     (format "g++ -Wall -std=c++20 -O2 -g -o \"%s\" \"%s\" && ./%s" name file name)
@@ -240,23 +240,23 @@
                             (format "python3 \"%s\"" (buffer-file-name))))))
 
   (add-hook 'sh-mode-hook
-      	  (lambda ()
-      	    (eglot-ensure)))
+        	  (lambda ()
+        	    (eglot-ensure)))
 
   (add-hook 'nix-mode-hook
-      	  (lambda ()
-      	    (eglot-ensure)))
+        	  (lambda ()
+        	    (eglot-ensure)))
 
   (use-package markdown-mode
     :mode ("\\.md\\'" . markdown-mode))
   (add-hook 'markdown-mode-hook
-      	  (lambda ()
-      	    (eglot-ensure)))
+        	  (lambda ()
+        	    (eglot-ensure)))
 
   (dolist (hook '(json-mode-hook css-mode-hook js-mode-hook typescript-mode-hook))
     (add-hook hook
-        	    (lambda ()
-        	      (eglot-ensure))))
+              (lambda ()
+                (eglot-ensure))))
 
   (add-hook 'eglot-managed-mode-hook
             (lambda ()
@@ -266,6 +266,19 @@
                 (add-hook 'before-save-hook
                           #'eglot-format-buffer
                           nil t))))
+
+  (setq interpreter-mode-alist
+        (append '(("python3" . python-mode)
+                  ("python"  . python-mode)
+                  ("node"    . js-mode)
+                  ("sh"      . sh-mode)
+                  ("bash"    . sh-mode))
+                interpreter-mode-alist))
+
+  (add-hook 'find-file-hook
+            (lambda ()
+              (when (eq major-mode 'fundamental-mode)
+                (set-auto-mode))))
 
 #+end_src
 
