@@ -247,19 +247,6 @@
                         #'eglot-format-buffer
                         nil t))))
 
-(setq interpreter-mode-alist
-      (append '(("python3" . python-mode)
-                ("python"  . python-mode)
-                ("node"    . js-mode)
-                ("sh"      . sh-mode)
-                ("bash"    . sh-mode))
-              interpreter-mode-alist))
-
-(add-hook 'find-file-hook
-          (lambda ()
-            (when (eq major-mode 'fundamental-mode)
-              (set-auto-mode))))
-
 ;; Completion
 
 (ido-mode 1)
